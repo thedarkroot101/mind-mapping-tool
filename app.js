@@ -29,7 +29,6 @@ const calculatePosY = (y, node) =>
 function createNode(x, y) {
   const node = document.createElement("div");
   node.className = "node";
-  node.textContent = "Node " + ++nodeId;
   node.style.opacity = 0;
   node.style.pointerEvents = "none";
   mapArea.appendChild(node);
@@ -40,6 +39,9 @@ function createNode(x, y) {
   node.style.opacity = 1;
   node.style.pointerEvents = "all";
 
+  node.contentEditable = true;
+  node.focus();
+
   node.ondblclick = () => {
     node.contentEditable = true;
     node.focus();
@@ -47,11 +49,19 @@ function createNode(x, y) {
 
   node.onblur = () => {
     node.contentEditable = false;
+
+    if (!node.textContent) {
+      node.textContent = "Node " + ++nodeId;
+    }
   };
 
   node.onkeydown = (e) => {
     if (e.key === "Escape") {
       node.contentEditable = false;
+
+      if (!node.textContent) {
+        node.textContent = "Node " + ++nodeId;
+      }
     }
   };
 
