@@ -44,6 +44,13 @@ function createNode(x, y) {
 
   node.ondblclick = () => {
     node.contentEditable = true;
+
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+
     node.focus();
   };
 
