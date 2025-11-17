@@ -1,8 +1,14 @@
 {
   "name": "mind-mapping-tool",
-  "private": false,
+  "private": true,
   "scripts": {
     "dev": "bun run index.html",
     "build": "bun build --minify --splitting --outdir=public index.html"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }
