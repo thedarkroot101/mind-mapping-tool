@@ -2,7 +2,7 @@ const mapArea = document.getElementById("mapArea");
 const connectionsContainer = document.querySelector("#connections");
 
 let nodeId = 0;
-let connections = [[0, 1]];
+let connections = [];
 
 mapArea.addEventListener("dblclick", (e) => {
   const el = e.target;
@@ -11,7 +11,6 @@ mapArea.addEventListener("dblclick", (e) => {
   }
 });
 
-// #region Nodes
 function calculateNodePosition(x, y, node) {
   node.dataset.x = x;
   node.dataset.y = y;
@@ -21,16 +20,16 @@ function calculateNodePosition(x, y, node) {
         10,
         Math.min(
           y - node.clientHeight / 2,
-          window.innerHeight - node.clientHeight - 10
-        )
+          window.innerHeight - node.clientHeight - 10,
+        ),
       ) + "px",
     left:
       Math.max(
         10,
         Math.min(
           x - node.clientWidth / 2,
-          window.innerWidth - node.clientWidth - 10
-        )
+          window.innerWidth - node.clientWidth - 10,
+        ),
       ) + "px",
   };
 }
@@ -67,15 +66,16 @@ export function createNode(x, y) {
   function disableNodeEditing() {
     node.contentEditable = false;
     if (!node.textContent) {
-      node.textContent = "Node " + ++nodeId;
+      node.textContent = "Node " + nodeId;
     }
+    node.dataset.x = parseInt(node.style.left) + node.clientWidth / 2;
+    node.dataset.y = parseInt(node.style.top) + node.clientHeight / 2;
+    updateConnections();
   }
 
   node.onblur = disableNodeEditing;
 
   node.onkeydown = (e) => {
-    node.dataset.x = parseInt(node.style.left) + node.clientWidth / 2;
-    node.dataset.y = parseInt(node.style.top) + node.clientHeight / 2;
     if (e.key === "Escape") {
       disableNodeEditing();
     }
@@ -92,6 +92,7 @@ export function createNode(x, y) {
     const nodePostition = calculateNodePosition(e.clientX, e.clientY, node);
     node.style.left = nodePostition.left;
     node.style.top = nodePostition.top;
+    updateConnections();
   });
 
   document.addEventListener("mouseup", () => {
@@ -101,57 +102,41 @@ export function createNode(x, y) {
   return node;
 }
 
-//#endregion
-
-// #region Connections
 function createConnection(node0, node1) {
   const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
   line.setAttribute("x1", node0.dataset.x);
   line.setAttribute("y1", node0.dataset.y);
   line.setAttribute("x2", node1.dataset.x);
   line.setAttribute("y2", node1.dataset.y);
+  line.dataset.id = connections.length;
+  console.log(connectionsContainer);
   connectionsContainer.appendChild(line);
+  connections.push([node0, node1, line]);
 }
 
-// mapArea.addEventListener("click", (e) => {
-//   const el = e.target;
-//   if (el.id === "mapArea") {
-//     createConnection(e);
-//   }
-// });
+function updateConnections() {
+  connections.forEach((connection) => {
+    const node0 = connection[0];
+    const node1 = connection[1];
+    const line = connection[2];
+    line.setAttribute("x1", node0.dataset.x);
+    line.setAttribute("y1", node0.dataset.y);
+    line.setAttribute("x2", node1.dataset.x);
+    line.setAttribute("y2", node1.dataset.y);
+  });
+}
 
-// let endClick = false;
-// const connection = {
-//   x1: 0,
-//   y1: 0,
-//   x2: 0,
-//   y2: 0,
-// };
-
-// function createConnection(e) {
-//   if (!endClick) {
-//     connection.x1 = e.clientX;
-//     connection.y1 = e.clientY;
-//     console.log(connection, 1);
-//   } else {
-//     connection.x2 = e.clientX;
-//     connection.y2 = e.clientY;
-//     console.log(connection);
-//     connections.push(connection, 2);
-//     createConnections();
-//   }
-
-//   endClick = !endClick;
-// }
-// #endregion
-
-// TODO remove later
-const node0 = createNode(400, 400);
-const node1 = createNode(800, 600);
-
-createConnection(node0, node1);
-
-const node2 = createNode(444, 220);
-const node3 = createNode(232, 600);
-
-createConnection(node2, node3);
+let selectedNode = null;
+mapArea.addEventListener("click", (e) => {
+  if (!(e.target.classList.contains("node") && e.ctrlKey)) return;
+  const node = e.target;
+  if (!selectedNode) {
+    selectedNode = node;
+    selectedNode.style.borderColor = "#00aaff";
+  } else {
+    createConnection(selectedNode, node);
+    console.log(selectedNode, node);
+    selectedNode.style.borderColor = "#444";
+    selectedNode = null;
+  }
+});
