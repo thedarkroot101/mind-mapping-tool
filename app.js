@@ -45,6 +45,7 @@ export function createNode(x, y) {
   node.style.left = nodePostition.left;
   node.style.top = nodePostition.top;
   node.dataset.id = nodeId++;
+  node.dataset.conn = "";
   node.style.opacity = 1;
   node.style.pointerEvents = "all";
 
@@ -70,7 +71,7 @@ export function createNode(x, y) {
     }
     node.dataset.x = parseInt(node.style.left) + node.clientWidth / 2;
     node.dataset.y = parseInt(node.style.top) + node.clientHeight / 2;
-    updateConnections();
+    updateConnection(node);
   }
 
   node.onblur = disableNodeEditing;
@@ -92,7 +93,7 @@ export function createNode(x, y) {
     const nodePostition = calculateNodePosition(e.clientX, e.clientY, node);
     node.style.left = nodePostition.left;
     node.style.top = nodePostition.top;
-    updateConnections();
+    updateConnection(node);
   });
 
   document.addEventListener("mouseup", () => {
@@ -109,21 +110,26 @@ function createConnection(node0, node1) {
   line.setAttribute("x2", node1.dataset.x);
   line.setAttribute("y2", node1.dataset.y);
   line.dataset.id = connections.length;
-  console.log(connectionsContainer);
+  node0.dataset.conn += connections.length + ",";
+  node1.dataset.conn += connections.length + ",";
   connectionsContainer.appendChild(line);
   connections.push([node0, node1, line]);
 }
 
-function updateConnections() {
-  connections.forEach((connection) => {
-    const node0 = connection[0];
-    const node1 = connection[1];
-    const line = connection[2];
-    line.setAttribute("x1", node0.dataset.x);
-    line.setAttribute("y1", node0.dataset.y);
-    line.setAttribute("x2", node1.dataset.x);
-    line.setAttribute("y2", node1.dataset.y);
-  });
+function updateConnection(node) {
+  if (node.dataset.conn) {
+    node.dataset.conn.split(",").forEach((connId) => {
+      if (!connId) return;
+      const connection = connections[connId];
+      const node0 = connection[0];
+      const node1 = connection[1];
+      const line = connection[2];
+      line.setAttribute("x1", node0.dataset.x);
+      line.setAttribute("y1", node0.dataset.y);
+      line.setAttribute("x2", node1.dataset.x);
+      line.setAttribute("y2", node1.dataset.y);
+    });
+  }
 }
 
 let selectedNode = null;
@@ -135,7 +141,13 @@ mapArea.addEventListener("click", (e) => {
     selectedNode.style.borderColor = "#00aaff";
   } else {
     createConnection(selectedNode, node);
-    console.log(selectedNode, node);
+    selectedNode.style.borderColor = "#444";
+    selectedNode = null;
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key == "Escape" && selectedNode) {
     selectedNode.style.borderColor = "#444";
     selectedNode = null;
   }
