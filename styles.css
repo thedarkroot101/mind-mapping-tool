@@ -1,6 +1,7 @@
 body {
   margin: 0;
   font-family: sans-serif;
+  color: ghostwhite;
   background: #222222;
 }
 
@@ -22,18 +23,31 @@ body {
 }
 
 .node {
+  display: flex;
+  width: fit-content;
   position: absolute;
-  padding: 12px 18px;
-  background: white;
-  border-radius: 16px;
-  border: 2px solid #444;
+  background: #777777;
   cursor: grab;
   user-select: none;
 }
+
 .node:active {
   cursor: grabbing;
 }
 
+.node > .colorpicker {
+  background-color: #e2e2e2;
+  width: 8px;
+}
+
+.node > .text {
+  padding: 8px;
+  outline: none !important;
+}
+
+.node:has(.text:focus) {
+  outline: 2px solid #fff;
+}
 svg {
   position: absolute;
   top: 0;
@@ -44,6 +58,6 @@ svg {
 }
 
 line {
-  stroke: #979797;
+  stroke: #888888;
   stroke-width: 2;
 }

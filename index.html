@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <template id="nodeTemplate">
+      <div class="node node-clickable">
+        <div class="colorpicker node-clickable child"></div>
+        <div class="text node-clickable child">Text</div>
+      </div>
+    </template>
     <div id="root">
       <div id="mapArea">
         <div id="viewport">

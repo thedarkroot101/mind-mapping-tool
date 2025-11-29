@@ -1,0 +1,23 @@
+[*] Node connections
+[ ] Color coding support (with color palette)
+[ ] Markdown support
+[ ] Node selection support
+[ ] Delete
+[ ] Bulk move support
+[ ] Zoom in/out
+[ ] Export to image (png, jpg, svg)
+[ ] Pan support
+[ ] Undo/Redo support
+[ ] Welcome screen (will include: app tutorial) (disappers when the user adds a node)
+---------- LATER ----------
+[ ] Themes support (light/dark mode)
+[ ] Import from image (png, jpg, svg)
+[ ] Keyboard shortcuts
+[ ] Autosave
+[ ] Cloud sync support
+[ ] Collaboration support (multiple users editing the same mind map)
+[ ] Node icons support
+[ ] Search functionality
+[ ] Node collapsing/expanding
+[ ] Custom node shapes
+[ ] Integration with other apps (e.g., note-taking apps, project management tools)

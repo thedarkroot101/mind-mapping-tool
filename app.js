@@ -1,5 +1,6 @@
 const mapArea = document.getElementById("mapArea");
 const connectionsContainer = document.querySelector("#connections");
+const nodeTemplate = document.getElementById("nodeTemplate");
 
 let nodeId = 0;
 let connections = [];
@@ -35,7 +36,9 @@ function calculateNodePosition(x, y, node) {
 }
 
 export function createNode(x, y) {
-  const node = document.createElement("div");
+  const fragment = nodeTemplate.content.cloneNode(true);
+  const node = fragment.querySelector(".node");
+  const nodeTextEl = fragment.querySelector(".text");
   node.className = "node";
   node.style.opacity = 0;
   node.style.pointerEvents = "none";
@@ -49,11 +52,11 @@ export function createNode(x, y) {
   node.style.opacity = 1;
   node.style.pointerEvents = "all";
 
-  node.contentEditable = true;
-  node.focus();
+  nodeTextEl.contentEditable = true;
+  nodeTextEl.focus();
 
   node.ondblclick = () => {
-    node.contentEditable = true;
+    nodeTextEl.contentEditable = true;
 
     const range = document.createRange();
     range.selectNodeContents(node);
@@ -65,16 +68,16 @@ export function createNode(x, y) {
   };
 
   function disableNodeEditing() {
-    node.contentEditable = false;
-    if (!node.textContent) {
-      node.textContent = "Node " + nodeId;
+    nodeTextEl.contentEditable = false;
+    if (!nodeTextEl.textContent) {
+      nodeTextEl.textContent = "Node " + nodeId;
     }
     node.dataset.x = parseInt(node.style.left) + node.clientWidth / 2;
     node.dataset.y = parseInt(node.style.top) + node.clientHeight / 2;
     updateConnection(node);
   }
 
-  node.onblur = disableNodeEditing;
+  nodeTextEl.onblur = disableNodeEditing;
 
   node.onkeydown = (e) => {
     if (e.key === "Escape") {
@@ -134,15 +137,19 @@ function updateConnection(node) {
 
 let selectedNode = null;
 mapArea.addEventListener("click", (e) => {
-  if (!(e.target.classList.contains("node") && e.ctrlKey)) return;
-  const node = e.target;
-  if (!selectedNode) {
-    selectedNode = node;
-    selectedNode.style.borderColor = "#00aaff";
-  } else {
-    createConnection(selectedNode, node);
-    selectedNode.style.borderColor = "#444";
-    selectedNode = null;
+  console.log(e.target);
+  if (e.target.classList.contains("node-clickable") && e.ctrlKey) {
+    const node = e.target.classList.contains("child")
+      ? e.target.parentElement
+      : e.target;
+    if (!selectedNode) {
+      selectedNode = node;
+      selectedNode.style.borderColor = "#00aaff";
+    } else {
+      createConnection(selectedNode, node);
+      selectedNode.style.borderColor = "#444";
+      selectedNode = null;
+    }
   }
 });
 
